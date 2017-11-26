@@ -6,33 +6,37 @@
 package com.csu.fullerton.cpsc531.ui;
 
 import com.csu.fullerton.cpsc531.database.Cassandra;
+import com.csu.fullerton.cpsc531.obj.Contact;
 import com.csu.fullerton.cpsc531.ui.utils.ImageFilter;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
-
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
 /**
  *
  * @author Peter
  */
 public class ListContact extends javax.swing.JFrame {
 
-    /**
-     * Creates new form ListContact
-     */
-    public ListContact() {
+	Cassandra cassandra = new Cassandra();
+//  ResultSet result = cassandra.selectAllEmployees();
+//  for (Row row : result) {
+//      System.out.format("%d %s %s %s %s \n", row.getInt("emp_id"), row.getString("emp_name"), row.getString("emp_city"), row.getVarint("emp_sal"), row.getVarint("emp_phone"));
+//  }
+	
+	//Creates new form ListContact
+    
+	public ListContact() {
         initComponents();
-        Cassandra cassandra = new Cassandra();
-        ResultSet result = cassandra.selectAllEmployees();
-        for (Row row : result) {
-            System.out.format("%d %s %s %s %s \n", row.getInt("emp_id"), row.getString("emp_name"), row.getString("emp_city"), row.getVarint("emp_sal"), row.getVarint("emp_phone"));
-        }
+   
     }
 
     /**
@@ -83,10 +87,15 @@ public class ListContact extends javax.swing.JFrame {
         list_employees.setFont(new java.awt.Font("Monospaced", 1, 16)); // NOI18N
         list_employees.setForeground(new java.awt.Color(0, 102, 153));
         list_employees.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Albares, Cammy", "Amigon, Minna", "Butt, James", "Caldarera, Kiley", "Darakjy, Josephine", "Dilliard, Leota", "Flosi, Fletcher", "Foller, Donette", "Garufi, Meaghan", "Inouye, Veronika", "Maclead, Abel", "Marrier, Kris", "Morasca, Simona", "Nicka, Bette", "Paprocki, Lenna", "Poquette, Mattie", "Rim, Gladys", "Ruta, Graciela", "Tollner, Mitsue", "Venere, Art", "Whobrey, Yuki", "Wieser, Sage" };
+// **********Added by ASIT**************            
+        	String[] strings = cassandra.selectAllContact();
+        	
+//        	String[] strings = { "Albares, Cammy", "Amigon, Minna", "Butt, James", "Caldarera, Kiley", "Darakjy, Josephine", "Dilliard, Leota", "Flosi, Fletcher", "Foller, Donette", "Garufi, Meaghan", "Inouye, Veronika", "Maclead, Abel", "Marrier, Kris", "Morasca, Simona", "Nicka, Bette", "Paprocki, Lenna", "Poquette, Mattie", "Rim, Gladys", "Ruta, Graciela", "Tollner, Mitsue", "Venere, Art", "Whobrey, Yuki", "Wieser, Sage" };
+        	
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
+        
         list_employees.setFixedCellHeight(32);
         list_employees.setSelectionBackground(new java.awt.Color(204, 255, 153));
         jScrollPane1.setViewportView(list_employees);

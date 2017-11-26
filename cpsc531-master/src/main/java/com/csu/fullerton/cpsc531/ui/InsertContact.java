@@ -6,6 +6,7 @@
 package com.csu.fullerton.cpsc531.ui;
 
 import com.csu.fullerton.cpsc531.obj.Contact;
+import com.csu.fullerton.cpsc531.obj.main;
 import com.csu.fullerton.cpsc531.database.Cassandra;
 
 import com.csu.fullerton.cpsc531.ui.utils.ImageFilter;
@@ -24,6 +25,7 @@ import javax.sql.rowset.serial.SerialException;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
+
 /**
  *
  * @author Peter
@@ -35,17 +37,52 @@ public class InsertContact extends javax.swing.JFrame {
      */
 	Contact insContact = new Contact();
 	Cassandra cassandra = new Cassandra();
-	Image newimg = null;
+	
 	
     public InsertContact() {
     	
     	initComponents();
-    	
-    	    
-//        cassandra.insertContact(insContact);
-		
     }
 
+    public void SetContactObject() {
+
+    	UUID contactId = UUID.randomUUID();
+    	insContact.setContactId(contactId);
+    	
+    	String firstname = txt_firstname.getText();
+    	insContact.setFirstname(firstname);
+        
+        String lastname = txt_lastname.getText();
+        insContact.setLastname(lastname);
+        
+        String company = txt_company.getText();
+        insContact.setCompany(company);
+        
+        String address1 = txt_address1.getText();
+        insContact.setAddress1(address1);
+        
+        String address2 = txt_address2.getText();
+        insContact.setAddress2(address2);
+        
+        String email = txt_email.getText();
+        insContact.setEmail(email);
+        
+        String telephone = txt_telephone.getText();
+        insContact.setTelephone(telephone);
+        
+        String cellphone = txt_cellphone.getText();
+        insContact.setCellphone(cellphone);
+        
+        String department_code = (String)combo_department.getSelectedItem();
+        insContact.setDepartment_code(department_code); 
+        
+        String report_to = (String)combo_report_to.getSelectedItem();
+        insContact.setReport_to(report_to);
+        
+        String role = (String)combo_role.getSelectedItem();
+        insContact.setRole(role);
+    
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -173,12 +210,7 @@ public class InsertContact extends javax.swing.JFrame {
         _btn_add.setRolloverIcon(new javax.swing.ImageIcon(getClass().getResource("/images/add_rollover.png"))); // NOI18N
         _btn_add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                try {
-					_btn_addActionPerformed(evt);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+                _btn_addActionPerformed(evt);
             }
         });
 
@@ -382,79 +414,15 @@ public class InsertContact extends javax.swing.JFrame {
 
     }//GEN-LAST:event__btn_resetActionPerformed
 
-    private void _btn_addActionPerformed(java.awt.event.ActionEvent evt) throws IOException {//GEN-FIRST:event__btn_addActionPerformed
-    	
-    	UUID contactId = UUID.randomUUID();
-    	insContact.setContactId(contactId);
-    	
-    	String firstname = txt_firstname.getText();
-    	insContact.setFirstname(firstname);
-        
-        String lastname = txt_lastname.getText();
-        insContact.setLastname(lastname);
-        
-        String company = txt_company.getText();
-        insContact.setCompany(company);
-        
-        String address1 = txt_address1.getText();
-        insContact.setAddress1(address1);
-        
-        String address2 = txt_address2.getText();
-        insContact.setAddress2(address2);
-        
-        String email = txt_email.getText();
-        insContact.setEmail(email);
-        
-        String telephone = txt_telephone.getText();
-        insContact.setTelephone(telephone);
-        
-        String cellphone = txt_cellphone.getText();
-        insContact.setCellphone(cellphone);
-        
-        String department_code = (String)combo_department.getSelectedItem();
-        insContact.setDepartment_code(department_code); 
-        
-        String report_to = (String)combo_report_to.getSelectedItem();
-        insContact.setReport_to(report_to);
-        
-        String role = (String)combo_role.getSelectedItem();
-        insContact.setRole(role);
-    
-        BufferedImage originalImage = convertToBufferedImage(newimg);
-        ByteArrayOutputStream imageStream = new ByteArrayOutputStream();
-    	ImageIO.write(originalImage, "JPG", imageStream );
-    	imageStream.flush();
-    	byte[] imageInByte = imageStream.toByteArray();
-//    	ByteBuffer buffer = ByteBuffer.wrap(imageInByte);
-    	
-    	Blob photo = null;
-    	
-    	try {
-			photo = new javax.sql.rowset.serial.SerialBlob(imageInByte);
-		} catch (SerialException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
-		
-		insContact.setPhoto(photo);
+    private void _btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__btn_addActionPerformed
+
+    	SetContactObject();
     	
     	cassandra.insertContact(insContact);
   
     }//GEN-LAST:event__btn_addActionPerformed
     
-    public static BufferedImage convertToBufferedImage(Image image)
-    {
-        BufferedImage newImage = new BufferedImage(
-            image.getWidth(null), image.getHeight(null),
-            BufferedImage.TYPE_INT_ARGB);
-        
-        return newImage;
-    }
-    
+      
     
     private void _btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__btn_cancelActionPerformed
         // TODO add your handling code here:
@@ -468,16 +436,17 @@ public class InsertContact extends javax.swing.JFrame {
         int result = fc.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
-            try {
-                ImageIcon icon = new ImageIcon(ImageIO.read(file));
+                ImageIcon icon = null;
+				try {
+					icon = new ImageIcon(ImageIO.read(file));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
                 Image img = icon.getImage();
-                newimg = img.getScaledInstance(165, 165, java.awt.Image.SCALE_SMOOTH);
-                
+                Image newimg = img.getScaledInstance(165, 165, java.awt.Image.SCALE_SMOOTH);
                 _btn_photo.setText("");
-                _btn_photo.setIcon(new ImageIcon(newimg));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                _btn_photo.setIcon(new ImageIcon(newimg));         
         }
     }//GEN-LAST:event__btn_photoActionPerformed
 

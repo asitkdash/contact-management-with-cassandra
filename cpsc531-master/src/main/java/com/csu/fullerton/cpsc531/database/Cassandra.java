@@ -82,7 +82,7 @@ public class Cassandra {
 		session.execute("USE contact_mgmt");
 
 		String cqlcreatestmt = "CREATE TABLE IF NOT EXISTS contacts (" 
-										+ "contact_id uuid PRIMARY KEY," 
+										+ "contact_id uuid," 
 										+ "first_name text," 
 										+ "last_name text," 
 										+ "company text," 
@@ -94,7 +94,8 @@ public class Cassandra {
 										+ "role text,"
 										+ "department_code text,"
 										+ "report_to text,"
-										+ "photo blob" + ");";
+										+ "photo blob," 
+										+ "PRIMARY KEY(first_name,last_name));";
 		
 		session.execute(cqlcreatestmt);
 		System.out.println("creation complete in Cassandra DB");
@@ -151,9 +152,44 @@ public class Cassandra {
     public boolean deleteContact(UUID contactId) {
         return false;
     }
-
-    public List<Contact> selectAllContact() {
-        return new ArrayList<Contact>();
+//*******************ADDED by ASIT ************************
+//    public ArrayList<String> selectAllContact() {
+    public String[] selectAllContact() {
+    	
+    	connect("localhost");
+    	getSession();
+    	createSchema();
+/*    	
+    	ArrayList<String> selectAllContact = new ArrayList<String>();
+    	String output = null;
+    	    	
+    	String cqlselectstmt = "SELECT * FROM contacts;";
+        ResultSet result = session.execute(cqlselectstmt);
+        
+        for (Row row : result) {
+        	output = row.getString("first_name") + "," + row.getString("last_name");
+        	selectAllContact.add(output);
+ //       		System.out.format("%s %s \n", row.getString("first_name"), row.getString("last_name"));
+        		System.out.format("%s \n", output);
+        }
+        
+        System.out.format("%s \n", selectAllContact);
+        return selectAllContact;
+*/
+    	String cqlselectstmt = "SELECT * FROM contacts;";
+        ResultSet result = session.execute(cqlselectstmt);
+        
+        int i = result.getAvailableWithoutFetching();
+    	int n = ++i;
+        String[] newArray = new String[n];
+        int count = 0;
+    	for (Row row : result) {
+    		newArray[count] = row.getString("first_name") + "," + row.getString("last_name");
+//    		System.out.format("%s \n", newArray[count]);
+    		count++;
+    	}
+		System.out.format("All contacts are displayed on screen");    	
+    	return newArray;
     }
 
     public List<Contact> selectTheManagement() { // all has roles: all but NOT 'employee' or 'other'
@@ -173,6 +209,7 @@ public class Cassandra {
         return new ArrayList<Contact>();
     }
 
+/*    
 	public static void main(String[] args) {
 		Cassandra cass = new Cassandra();
 		try {
@@ -195,4 +232,5 @@ public class Cassandra {
 			cass.closeSession();
 		}
 	}
+*/
 }
